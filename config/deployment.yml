@@ -1,0 +1,86 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: sitemap
+  labels:
+    app: sitemap
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "0 1 1 * *"
+  jobTemplate:
+    metadata:
+      labels:
+        app: sitemap
+      annotations:
+        linkerd.io/inject: enabled
+        config.linkerd.io/skip-outbound-ports: "4222"
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          imagePullSecrets:
+            - name: regcred
+          containers:
+            - name: sitemap
+              image: busybox
+              command:
+                - /app/servicebin
+              lifecycle:
+                preStop:
+                  exec:
+                    command:
+                      - sleep
+                      - 5s
+              livenessProbe:
+                httpGet:
+                  path: /healthz
+                  port: 80
+              readinessProbe:
+                httpGet:
+                  path: /healthz
+                  port: 80
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 100Mi
+                limits:
+                  cpu: "1"
+                  memory: 1Gi
+              env:
+                - name: S3_ALIAS
+                  valueFrom:
+                    configMapKeyRef:
+                      key: alias
+                      name: s3
+                - name: S3_SITEMAPBUCKETNAME
+                  valueFrom:
+                    configMapKeyRef:
+                      key: sitemapbucketname
+                      name: s3
+                - name: S3_ENDPOINT
+                  valueFrom:
+                    configMapKeyRef:
+                      key: endpoint
+                      name: s3
+                - name: S3_ACCESSKEYID
+                  valueFrom:
+                    configMapKeyRef:
+                      key: accesskeyid
+                      name: s3
+                - name: S3_SECRETACCESSKEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: secretaccesskey
+                      name: s3
+                - name: S3_SECURE
+                  valueFrom:
+                    configMapKeyRef:
+                      key: secure
+                      name: s3
+                - name: S3_REGION
+                  valueFrom:
+                    configMapKeyRef:
+                      key: region
+                      name: s3
+                - name: LOGLEVEL
+                  value: error
