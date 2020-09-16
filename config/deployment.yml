@@ -87,4 +87,4 @@ spec:
                       key: url
                       name: host
                 - name: LOGLEVEL
-                  value: debug
+                  value: error
