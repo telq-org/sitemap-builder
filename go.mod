@@ -3,7 +3,6 @@ module github.com/nnqq/scr-sitemap-builder
 go 1.15
 
 require (
-	github.com/ikeikeikeike/go-sitemap-generator v1.0.2 // indirect
 	github.com/ikeikeikeike/go-sitemap-generator/v2 v2.0.2
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/minio/minio-go/v7 v7.0.5
