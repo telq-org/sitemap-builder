@@ -15,6 +15,6 @@ func healthz() {
 }
 
 func main() {
-	healthz()
+	go healthz()
 	logger.Must(sitemap.Build())
 }
