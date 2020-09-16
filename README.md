@@ -1,1 +1,1 @@
-# scr-sitemap
+# scr-sitemap-builder

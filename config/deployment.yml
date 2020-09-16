@@ -1,19 +1,18 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: sitemap
+  name: sitemap-builder
   labels:
-    app: sitemap
+    app: sitemap-builder
 spec:
   concurrencyPolicy: Forbid
   schedule: "0 1 1 * *"
   jobTemplate:
     metadata:
       labels:
-        app: sitemap
+        app: sitemap-builder
       annotations:
         linkerd.io/inject: enabled
-        config.linkerd.io/skip-outbound-ports: "4222"
     spec:
       template:
         spec:
@@ -21,7 +20,7 @@ spec:
           imagePullSecrets:
             - name: regcred
           containers:
-            - name: sitemap
+            - name: sitemap-builder
               image: busybox
               command:
                 - /app/servicebin
@@ -41,17 +40,12 @@ spec:
                   port: 80
               resources:
                 requests:
-                  cpu: 10m
-                  memory: 100Mi
+                  cpu: 100m
+                  memory: 300Mi
                 limits:
                   cpu: "1"
                   memory: 1Gi
               env:
-                - name: S3_ALIAS
-                  valueFrom:
-                    configMapKeyRef:
-                      key: alias
-                      name: s3
                 - name: S3_SITEMAPBUCKETNAME
                   valueFrom:
                     configMapKeyRef:
@@ -82,5 +76,15 @@ spec:
                     configMapKeyRef:
                       key: region
                       name: s3
+                - name: MONGODB_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      key: url
+                      name: mongodb
+                - name: HOST_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      key: url
+                      name: host
                 - name: LOGLEVEL
                   value: error

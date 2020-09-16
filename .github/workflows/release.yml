@@ -22,12 +22,12 @@ jobs:
           nnqq/scr-: ''
 
       - name: Push to GitHub Packages
-        uses: docker/build-push-action@v1
+        uses: docker/build-push-action@v2
         with:
           username: nnqq
           password: ${{ secrets.GH_CI_TOKEN }}
-          registry: docker.pkg.github.com
-          repository: ${{ github.repository }}/${{ steps.substr.outputs.result }}
+          registry: ghcr.io
+          repository: nnqq/${{ steps.substr.outputs.result }}
           tag_with_ref: true
           build_args: GH_CI_TOKEN=${{ secrets.GH_CI_TOKEN }}
 
@@ -40,7 +40,7 @@ jobs:
         run: doctl kubernetes cluster kubeconfig save k8s
 
       - name: Update deployment file
-        run: sed -i 's|busybox|docker.pkg.github.com/${{ github.repository }}/${{ steps.substr.outputs.result }}:${{ github.event.release.tag_name }}|' $GITHUB_WORKSPACE/config/deployment.yml
+        run: sed -i 's|busybox|ghcr.io/nnqq/${{ steps.substr.outputs.result }}:${{ github.event.release.tag_name }}|' $GITHUB_WORKSPACE/config/deployment.yml
 
       - name: Apply deployment
         run: kubectl -n leaq apply -f ${{ github.workspace }}/config/deployment.yml
