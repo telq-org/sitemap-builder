@@ -40,10 +40,10 @@ spec:
                   port: 80
               resources:
                 requests:
-                  cpu: 10m
+                  cpu: 800m
                   memory: 100Mi
                 limits:
-                  cpu: "1"
+                  cpu: "1.5"
                   memory: 1Gi
               env:
                 - name: S3_SITEMAPBUCKETNAME
