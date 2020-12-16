@@ -43,7 +43,10 @@ func Build() error {
 		}
 	}(ctx)
 
-	const https = "https://"
+	const (
+		https    = "https://"
+		download = "download"
+	)
 
 	sm := stm.NewSitemap(0)
 	sm.SetDefaultHost(https + config.Env.Host.URL)
@@ -63,7 +66,9 @@ func Build() error {
 	sm.Add(stm.URL{{"loc", "about"}})
 	sm.Add(stm.URL{{"loc", "cities"}})
 	sm.Add(stm.URL{{"loc", "categories"}})
+	sm.Add(stm.URL{{"loc", "plans"}})
 	sm.Add(stm.URL{{"loc", "all/all"}})
+	sm.Add(stm.URL{{"loc", "all/all/download"}})
 	totalProcessed += 4
 	for curCity.Next(ctx) {
 		var city document
@@ -81,7 +86,12 @@ func Build() error {
 			city.Slug,
 			"all",
 		}, "/")}})
-		totalProcessed += 1
+		sm.Add(stm.URL{{"loc", strings.Join([]string{
+			city.Slug,
+			"all",
+			download,
+		}, "/")}})
+		totalProcessed += 2
 
 		curCategory, err := mongo.Categories.Find(ctx, bson.D{})
 		if err != nil {
@@ -105,7 +115,12 @@ func Build() error {
 				city.Slug,
 				category.Slug,
 			}, "/")}})
-			totalProcessed += 1
+			sm.Add(stm.URL{{"loc", strings.Join([]string{
+				city.Slug,
+				category.Slug,
+				download,
+			}, "/")}})
+			totalProcessed += 2
 		}
 
 		err = curCategory.Close(ctx)
@@ -137,7 +152,12 @@ func Build() error {
 			"all",
 			category.Slug,
 		}, "/")}})
-		totalProcessed += 1
+		sm.Add(stm.URL{{"loc", strings.Join([]string{
+			"all",
+			category.Slug,
+			download,
+		}, "/")}})
+		totalProcessed += 2
 	}
 
 	curCompany, err := mongo.Companies.Find(ctx, bson.D{})
