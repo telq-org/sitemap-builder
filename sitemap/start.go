@@ -160,7 +160,9 @@ func Build() error {
 		totalProcessed += 2
 	}
 
-	curCompany, err := mongo.Companies.Find(ctx, bson.D{})
+	curCompany, err := mongo.Companies.Find(ctx, bson.M{
+		"h": false,
+	})
 	if err != nil {
 		logger.Log.Error().Err(err).Send()
 		return err
