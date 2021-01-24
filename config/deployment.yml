@@ -24,12 +24,6 @@ spec:
               image: busybox
               command:
                 - /app/servicebin
-              lifecycle:
-                preStop:
-                  exec:
-                    command:
-                      - sleep
-                      - 5s
               livenessProbe:
                 httpGet:
                   path: /healthz
