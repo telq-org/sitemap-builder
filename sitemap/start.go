@@ -198,7 +198,7 @@ func Build() error {
 
 	for curOrgs.Next(ctx) {
 		var org document
-		err := curCompany.Decode(&org)
+		err := curOrgs.Decode(&org)
 		if err != nil {
 			logger.Log.Error().Err(err).Send()
 			return err
