@@ -16,6 +16,7 @@ var (
 	Companies  *mongo.Collection
 	Cities     *mongo.Collection
 	Categories *mongo.Collection
+	Orgs       *mongo.Collection
 )
 
 func init() {
@@ -39,4 +40,5 @@ func init() {
 	Companies = client.Database("parser").Collection("companies")
 	Cities = client.Database("city").Collection("cities")
 	Categories = client.Database("category").Collection("categories")
+	Orgs = client.Database("org").Collection("orgs")
 }

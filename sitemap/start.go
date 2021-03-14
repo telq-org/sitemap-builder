@@ -63,6 +63,7 @@ func Build() error {
 		return err
 	}
 
+	sm.Add(stm.URL{{"loc", "orgs"}})
 	sm.Add(stm.URL{{"loc", "about"}})
 	sm.Add(stm.URL{{"loc", "cities"}})
 	sm.Add(stm.URL{{"loc", "categories"}})
@@ -183,6 +184,34 @@ func Build() error {
 		sm.Add(stm.URL{{"loc", strings.Join([]string{
 			"company",
 			company.Slug,
+		}, "/")}})
+		totalProcessed += 1
+	}
+
+	curOrgs, err := mongo.Orgs.Find(ctx, bson.M{
+		"bk": 1,
+	})
+	if err != nil {
+		logger.Log.Error().Err(err).Send()
+		return err
+	}
+
+	for curOrgs.Next(ctx) {
+		var org document
+		err := curCompany.Decode(&org)
+		if err != nil {
+			logger.Log.Error().Err(err).Send()
+			return err
+		}
+
+		if org.Slug == "" {
+			continue
+		}
+
+		sm.Add(stm.URL{{"loc", strings.Join([]string{
+			"orgs",
+			"company",
+			org.Slug,
 		}, "/")}})
 		totalProcessed += 1
 	}
