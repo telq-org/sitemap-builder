@@ -11,8 +11,6 @@ spec:
     metadata:
       labels:
         app: sitemap-builder
-      annotations:
-        linkerd.io/inject: enabled
     spec:
       template:
         spec:
@@ -35,10 +33,10 @@ spec:
               resources:
                 requests:
                   cpu: 800m
-                  memory: 100Mi
+                  memory: 250Mi
                 limits:
-                  cpu: "1.5"
-                  memory: 1Gi
+                  cpu: 800m
+                  memory: 250Mi
               env:
                 - name: S3_SITEMAPBUCKETNAME
                   valueFrom:
