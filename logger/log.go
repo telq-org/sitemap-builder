@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/nnqq/scr-sitemap-builder/config"
+	"github.com/leaq-ru/sitemap-builder/config"
 	"github.com/rs/zerolog"
 	"os"
 )

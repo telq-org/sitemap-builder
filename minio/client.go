@@ -3,10 +3,10 @@ package minio
 import (
 	"context"
 	"fmt"
+	"github.com/leaq-ru/sitemap-builder/config"
+	"github.com/leaq-ru/sitemap-builder/logger"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/nnqq/scr-sitemap-builder/config"
-	"github.com/nnqq/scr-sitemap-builder/logger"
 	"strconv"
 	"time"
 )

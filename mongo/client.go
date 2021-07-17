@@ -2,8 +2,8 @@ package mongo
 
 import (
 	"context"
-	"github.com/nnqq/scr-sitemap-builder/config"
-	"github.com/nnqq/scr-sitemap-builder/logger"
+	"github.com/leaq-ru/sitemap-builder/config"
+	"github.com/leaq-ru/sitemap-builder/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readconcern"

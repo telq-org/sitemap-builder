@@ -1,1 +1,1 @@
-# scr-sitemap-builder
+https://github.com/leaq-ru/about

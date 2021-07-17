@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/nnqq/scr-sitemap-builder/logger"
-	"github.com/nnqq/scr-sitemap-builder/sitemap"
+	"github.com/leaq-ru/sitemap-builder/logger"
+	"github.com/leaq-ru/sitemap-builder/sitemap"
 	"net/http"
 )
 

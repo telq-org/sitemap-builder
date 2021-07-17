@@ -1,4 +1,4 @@
-module github.com/nnqq/scr-sitemap-builder
+module github.com/leaq-ru/sitemap-builder
 
 go 1.15
 
