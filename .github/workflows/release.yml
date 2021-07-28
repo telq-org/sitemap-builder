@@ -39,7 +39,7 @@ jobs:
         run: doctl kubernetes cluster kubeconfig save k8s
 
       - name: Update deployment file
-        run: sed -i 's|busybox|ghcr.io/nnqq/${{ steps.substr.outputs.result }}:${{ github.event.release.tag_name }}|' $GITHUB_WORKSPACE/config/deployment.yml
+        run: sed -i 's|busybox|ghcr.io/leaq-ru/${{ steps.substr.outputs.result }}:${{ github.event.release.tag_name }}|' $GITHUB_WORKSPACE/config/deployment.yml
 
       - name: Apply cron job
         run: kubectl -n leaq apply -f ${{ github.workspace }}/config/deployment.yml
