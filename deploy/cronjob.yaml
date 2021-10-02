@@ -6,7 +6,7 @@ metadata:
     app: sitemap-builder
 spec:
   concurrencyPolicy: Forbid
-  schedule: "0 1 20 * *"
+  schedule: "0 1 10 * *"
   jobTemplate:
     metadata:
       labels:
