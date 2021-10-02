@@ -59,7 +59,7 @@ func Build() error {
 
 	const https = "https://"
 
-	sm := stm.NewSitemap(0)
+	sm := stm.NewSitemap(1)
 	sm.SetDefaultHost(https + "telq.org")
 	sm.SetSitemapsHost(https + "sitemap.telq.org")
 	sm.SetSitemapsPath("")

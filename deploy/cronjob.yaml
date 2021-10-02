@@ -32,11 +32,11 @@ spec:
                   port: 80
               resources:
                 requests:
-                  cpu: 800m
-                  memory: 250Mi
+                  cpu: 400m
+                  memory: 350Mi
                 limits:
-                  cpu: 800m
-                  memory: 250Mi
+                  cpu: 400m
+                  memory: 350Mi
               env:
                 - name: S3_BUCKETSITEMAP
                   valueFrom:
@@ -74,4 +74,4 @@ spec:
                       key: url
                       name: mongodb
                 - name: LOGLEVEL
-                  value: error
+                  value: debug
