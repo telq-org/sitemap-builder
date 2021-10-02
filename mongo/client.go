@@ -12,12 +12,7 @@ import (
 	"time"
 )
 
-var (
-	Companies  *mongo.Collection
-	Cities     *mongo.Collection
-	Categories *mongo.Collection
-	Orgs       *mongo.Collection
-)
+var Threads *mongo.Collection
 
 func init() {
 	const timeout = 10
@@ -37,8 +32,5 @@ func init() {
 	err = client.Ping(ctx, nil)
 	logger.Must(err)
 
-	Companies = client.Database("parser").Collection("companies")
-	Cities = client.Database("city").Collection("cities")
-	Categories = client.Database("category").Collection("categories")
-	Orgs = client.Database("org").Collection("orgs")
+	Threads = client.Database("telq_backend").Collection("threads")
 }

@@ -1,4 +1,4 @@
-name: release
+name: Release
 
 on:
   release:
@@ -14,21 +14,22 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: telq-org
+          password: ${{ secrets.GH_CI_TOKEN }}
+          registry: ghcr.io
+          repository: ${{ github.repository }}
+          tag_with_ref: true
+          build_args: GH_CI_TOKEN=${{ secrets.GH_CI_TOKEN }}
+
       - name: Extract service name
         uses: bluwy/substitute-string-action@v1
         id: substr
         with:
           _input-text: ${{ github.repository }}
-          leaq-ru/: ''
-
-      - name: Push to GitHub Packages
-        uses: docker/build-push-action@v1
-        with:
-          username: leaq-ru
-          password: ${{ secrets.GH_CI_TOKEN }}
-          registry: ghcr.io
-          repository: leaq-ru/${{ steps.substr.outputs.result }}
-          tag_with_ref: true
+          telq-org/: ''
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -39,7 +40,7 @@ jobs:
         run: doctl kubernetes cluster kubeconfig save k8s
 
       - name: Update deployment file
-        run: sed -i 's|busybox|ghcr.io/leaq-ru/${{ steps.substr.outputs.result }}:${{ github.event.release.tag_name }}|' $GITHUB_WORKSPACE/config/deployment.yml
+        run: sed -i 's|busybox|ghcr.io/${{ github.repository }}:${{ github.event.release.tag_name }}|' $GITHUB_WORKSPACE/deploy/cronjob.yaml
 
       - name: Apply cron job
-        run: kubectl -n leaq apply -f ${{ github.workspace }}/config/deployment.yml
+        run: kubectl -n telq apply -f ${{ github.workspace }}/deploy

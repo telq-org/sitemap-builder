@@ -34,17 +34,17 @@ func init() {
 	_, err = cl.ListBuckets(ctx)
 	logger.Must(err)
 
-	err = cl.MakeBucket(ctx, config.Env.S3.SitemapBucketName, minio.MakeBucketOptions{
+	err = cl.MakeBucket(ctx, config.Env.S3.BucketSitemap, minio.MakeBucketOptions{
 		Region: config.Env.S3.Region,
 	})
 	if err != nil {
 		// ok, seems bucket exists
 		logger.Log.Debug().Err(err).Send()
 	} else {
-		logger.Log.Debug().Str("bucketName", config.Env.S3.SitemapBucketName).Msg("bucket created")
+		logger.Log.Debug().Str("bucketName", config.Env.S3.BucketSitemap).Msg("bucket created")
 	}
 
-	err = cl.SetBucketPolicy(ctx, config.Env.S3.SitemapBucketName, fmt.Sprintf(`{
+	err = cl.SetBucketPolicy(ctx, config.Env.S3.BucketSitemap, fmt.Sprintf(`{
 		"Version": "2012-10-17",
 		"Statement": [{
 			"Sid": "PublicRead",
@@ -53,7 +53,7 @@ func init() {
 			"Action": ["s3:GetObject"],
 			"Resource": ["arn:aws:s3:::%s/*"]
 		}]
-	}`, config.Env.S3.SitemapBucketName))
+	}`, config.Env.S3.BucketSitemap))
 	if err != nil && err.Error() != "200 OK" {
 		logger.Log.Panic().Err(err).Send()
 	}

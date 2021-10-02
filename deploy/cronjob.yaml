@@ -38,10 +38,10 @@ spec:
                   cpu: 800m
                   memory: 250Mi
               env:
-                - name: S3_SITEMAPBUCKETNAME
+                - name: S3_BUCKETSITEMAP
                   valueFrom:
                     configMapKeyRef:
-                      key: sitemapbucketname
+                      key: bucketsitemap
                       name: s3
                 - name: S3_ENDPOINT
                   valueFrom:
@@ -73,10 +73,5 @@ spec:
                     configMapKeyRef:
                       key: url
                       name: mongodb
-                - name: HOST_URL
-                  valueFrom:
-                    configMapKeyRef:
-                      key: url
-                      name: host
                 - name: LOGLEVEL
                   value: error
