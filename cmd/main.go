@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/leaq-ru/sitemap-builder/logger"
-	"github.com/leaq-ru/sitemap-builder/sitemap"
+	"github.com/telq-org/sitemap-builder/pkg/logger"
+	"github.com/telq-org/sitemap-builder/pkg/sitemap"
 	"net/http"
 )
 

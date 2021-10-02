@@ -1,8 +1,8 @@
 package logger
 
 import (
-	"github.com/leaq-ru/sitemap-builder/config"
 	"github.com/rs/zerolog"
+	"github.com/telq-org/sitemap-builder/pkg/config"
 	"os"
 )
 
