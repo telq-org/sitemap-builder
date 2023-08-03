@@ -35,8 +35,8 @@ spec:
                   cpu: 400m
                   memory: 350Mi
                 limits:
-                  cpu: 400m
-                  memory: 350Mi
+                  cpu: "1"
+                  memory: 1Gi
               env:
                 - name: S3_BUCKETSITEMAP
                   valueFrom:
