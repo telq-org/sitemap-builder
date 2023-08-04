@@ -89,7 +89,7 @@ func Build() error {
 		"communities",
 	}, {
 		"priority",
-		"1.0",
+		"0.9",
 	}, {
 		"changefreq",
 		"daily",
