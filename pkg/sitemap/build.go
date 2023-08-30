@@ -22,7 +22,6 @@ import (
 type document struct {
 	ID        primitive.ObjectID `bson:"_id"`
 	UpdatedAt time.Time          `bson:"ua"`
-	Hidden    bool               `bson:"h"`
 }
 
 const outFolderName = "out"
@@ -99,14 +98,10 @@ func Build() error {
 		time.Now().UTC().Format(time.RFC3339),
 	}})
 
-	q := bson.M{
-		"h": nil,
-	}
-
 	err := iterate(
 		ctx,
 		mongo.Threads,
-		q,
+		bson.M{},
 		sm,
 		"question",
 		"0.7",
@@ -120,7 +115,9 @@ func Build() error {
 	err = iterate(
 		ctx,
 		mongo.Users,
-		q,
+		bson.M{
+			"h": nil,
+		},
 		sm,
 		"user",
 		"0.8",
@@ -148,7 +145,7 @@ func Build() error {
 	err = iterate(
 		ctx,
 		mongo.Communities,
-		q,
+		bson.M{},
 		sm,
 		"community",
 		"0.9",
