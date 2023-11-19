@@ -39,7 +39,7 @@ spec:
                   memory: 1Gi
               env:
                 - name: CONC
-                  value: 50
+                  value: "50"
                 - name: S3_BUCKETSITEMAP
                   valueFrom:
                     configMapKeyRef:
