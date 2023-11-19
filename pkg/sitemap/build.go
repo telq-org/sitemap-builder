@@ -13,18 +13,59 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	mongod "go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/sync/errgroup"
 	"os"
 	"path"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 type document struct {
 	ID        primitive.ObjectID `bson:"_id"`
 	UpdatedAt time.Time          `bson:"ua"`
+
+	Text         string `bson:"t,omitempty"`
+	Date         int64  `bson:"d,omitempty"`
+	ReplyCount   int64  `bson:"rc,omitempty"`
+	ViewCount    int64  `bson:"vc,omitempty"`
+	LikeCount    int64  `bson:"lc,omitempty"`
+	DislikeCount int64  `bson:"dc,omitempty"`
+
+	Rating float64 `bson:"r,omitempty"`
 }
 
 const outFolderName = "out"
+
+func calcRating(upvotes, downvotes, views, replies, textLength int64, dateCreated int64) float64 {
+	// Constants to adjust the impact of each parameter
+	const (
+		upvoteWeight     = 5
+		downvoteWeight   = -10
+		viewsWeight      = 0.5
+		repliesWeight    = 1
+		textLengthWeight = 0.001
+		dateWeight       = 15000
+	)
+
+	// Convert the Unix timestamp to a time.Time
+	dateCreatedTime := time.Unix(dateCreated, 0)
+
+	// Calculate the age of the question in days
+	ageInDays := time.Since(dateCreatedTime).Hours()/24.0 + 1 // adding 1 to avoid division by zero
+
+	// Calculate the score based on the parameters
+	score := float64(upvotes)*upvoteWeight +
+		float64(downvotes)*downvoteWeight +
+		float64(views)*viewsWeight +
+		float64(replies)*repliesWeight +
+		float64(textLength)*textLengthWeight
+
+	// Adjust the score based on the age of the question
+	adjustedScore := score / (ageInDays * dateWeight)
+
+	return adjustedScore
+}
 
 func Build() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Hour)
@@ -171,18 +212,55 @@ func iterate(
 	changefreq string,
 	counter *int,
 ) error {
+	logger.Log.Debug().Str("coll started", coll.Name()).Send()
+
 	cur, err := coll.Find(ctx, query)
 	if err != nil {
 		logger.Log.Error().Err(err).Send()
 		return fmt.Errorf("coll.Find: %w", err)
 	}
 
+	i := 0
+	var eg errgroup.Group
 	for cur.Next(ctx) {
 		var doc document
 		e := cur.Decode(&doc)
 		if e != nil {
 			logger.Log.Error().Err(e).Send()
 			return fmt.Errorf("cur.Decode: %w", e)
+		}
+
+		if coll.Name() == "threads" {
+			if i%config.Env.Conc == 0 {
+				e = eg.Wait()
+				if e != nil {
+					return fmt.Errorf("eg.Wait: %w", e)
+				}
+			}
+			i += 1
+			eg.Go(func() error {
+				rating := calcRating(
+					doc.LikeCount,
+					doc.DislikeCount,
+					doc.ViewCount,
+					doc.ReplyCount,
+					int64(utf8.RuneCountInString(doc.Text)),
+					doc.Date,
+				)
+
+				_, er := coll.UpdateOne(ctx, bson.M{
+					"_id": doc.ID,
+				}, bson.M{
+					"$set": bson.M{
+						"r": rating,
+					},
+				})
+				if er != nil {
+					return fmt.Errorf("coll.UpdateOne: %w", er)
+				}
+				return nil
+			})
+
 		}
 
 		lastmod := doc.UpdatedAt.Format(time.RFC3339)
@@ -213,6 +291,11 @@ func iterate(
 			lastmod,
 		}})
 		*counter += 1
+	}
+
+	err = eg.Wait()
+	if err != nil {
+		return fmt.Errorf("eg.Wait: %w", err)
 	}
 
 	return nil
