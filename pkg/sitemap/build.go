@@ -232,7 +232,7 @@ func iterate(
 
 		if coll.Name() == "threads" {
 			i += 1
-			if i%100000 == 0 {
+			if i%50000 == 0 {
 				_, er := coll.BulkWrite(ctx, bulk, options.BulkWrite().SetOrdered(false))
 				if er != nil {
 					return fmt.Errorf("coll.BulkWrite: %w", e)
