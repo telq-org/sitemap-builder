@@ -6,7 +6,7 @@ metadata:
     app: sitemap-builder
 spec:
   concurrencyPolicy: Forbid
-  schedule: "0 */6 * * *"
+  schedule: "0 */3 * * *"
   jobTemplate:
     metadata:
       labels:
@@ -38,8 +38,6 @@ spec:
                   cpu: "1"
                   memory: 1Gi
               env:
-                - name: CONC
-                  value: "5"
                 - name: S3_BUCKETSITEMAP
                   valueFrom:
                     configMapKeyRef:

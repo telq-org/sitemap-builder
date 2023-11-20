@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	mongod "go.mongodb.org/mongo-driver/mongo"
-	"golang.org/x/sync/errgroup"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"os"
 	"path"
 	"strings"
@@ -221,7 +221,7 @@ func iterate(
 	}
 
 	i := 0
-	var eg errgroup.Group
+	var bulk []mongod.WriteModel
 	for cur.Next(ctx) {
 		var doc document
 		e := cur.Decode(&doc)
@@ -231,36 +231,28 @@ func iterate(
 		}
 
 		if coll.Name() == "threads" {
-			if i%config.Env.Conc == 0 {
-				e = eg.Wait()
-				if e != nil {
-					return fmt.Errorf("eg.Wait: %w", e)
-				}
-			}
 			i += 1
-			eg.Go(func() error {
-				rating := calcRating(
-					doc.LikeCount,
-					doc.DislikeCount,
-					doc.ViewCount,
-					doc.ReplyCount,
-					int64(utf8.RuneCountInString(doc.Text)),
-					doc.Date,
-				)
-
-				_, er := coll.UpdateOne(ctx, bson.M{
-					"_id": doc.ID,
-				}, bson.M{
-					"$set": bson.M{
-						"r": rating,
-					},
-				})
+			if i%100000 == 0 {
+				_, er := coll.BulkWrite(ctx, bulk, options.BulkWrite().SetOrdered(false))
 				if er != nil {
-					return fmt.Errorf("coll.UpdateOne: %w", er)
+					return fmt.Errorf("coll.BulkWrite: %w", e)
 				}
-				return nil
-			})
-
+				bulk = nil
+			}
+			bulk = append(bulk, mongod.NewUpdateOneModel().SetFilter(bson.M{
+				"_id": doc.ID,
+			}).SetUpdate(bson.M{
+				"$set": bson.M{
+					"r": calcRating(
+						doc.LikeCount,
+						doc.DislikeCount,
+						doc.ViewCount,
+						doc.ReplyCount,
+						int64(utf8.RuneCountInString(doc.Text)),
+						doc.Date,
+					),
+				},
+			}))
 		}
 
 		lastmod := doc.UpdatedAt.Format(time.RFC3339)
@@ -293,9 +285,12 @@ func iterate(
 		*counter += 1
 	}
 
-	err = eg.Wait()
-	if err != nil {
-		return fmt.Errorf("eg.Wait: %w", err)
+	if len(bulk) > 0 {
+		_, err = coll.BulkWrite(ctx, bulk, options.BulkWrite().SetOrdered(false))
+		if err != nil {
+			return fmt.Errorf("coll.BulkWrite: %w", err)
+		}
+		bulk = nil
 	}
 
 	return nil

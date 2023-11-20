@@ -7,7 +7,6 @@ import (
 type c struct {
 	S3       s3
 	MongoDB  mongodb
-	Conc     int    `envconfig:"CONC"`
 	LogLevel string `envconfig:"LOGLEVEL"`
 }
 
