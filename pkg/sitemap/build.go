@@ -45,7 +45,7 @@ func calcRating(upvotes, downvotes, views, replies, textLength int64, dateCreate
 		viewsWeight      = 0.5
 		repliesWeight    = 1
 		textLengthWeight = 0.001
-		dateWeight       = 15000
+		dateWeight       = 30000
 	)
 
 	// Convert the Unix timestamp to a time.Time
