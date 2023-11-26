@@ -42,7 +42,7 @@ func calcRating(upvotes, downvotes, views, replies, textLength int64, dateCreate
 	const (
 		upvoteWeight     = 5
 		downvoteWeight   = -10
-		viewsWeight      = 0.3
+		viewsWeight      = 0.01
 		repliesWeight    = 1
 		textLengthWeight = 0.01
 		dateWeight       = 50000
