@@ -2,7 +2,6 @@ package minio
 
 import (
 	"context"
-	"fmt"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/telq-org/sitemap-builder/pkg/config"
@@ -44,19 +43,19 @@ func init() {
 		logger.Log.Debug().Str("bucketName", config.Env.S3.BucketSitemap).Msg("bucket created")
 	}
 
-	err = cl.SetBucketPolicy(ctx, config.Env.S3.BucketSitemap, fmt.Sprintf(`{
-		"Version": "2012-10-17",
-		"Statement": [{
-			"Sid": "PublicRead",
-			"Effect": "Allow",
-			"Principal": "*",
-			"Action": ["s3:GetObject"],
-			"Resource": ["arn:aws:s3:::%s/*"]
-		}]
-	}`, config.Env.S3.BucketSitemap))
-	if err != nil && err.Error() != "200 OK" {
-		logger.Log.Panic().Err(err).Send()
-	}
+	//err = cl.SetBucketPolicy(ctx, config.Env.S3.BucketSitemap, fmt.Sprintf(`{
+	//	"Version": "2012-10-17",
+	//	"Statement": [{
+	//		"Sid": "PublicRead",
+	//		"Effect": "Allow",
+	//		"Principal": "*",
+	//		"Action": ["s3:GetObject"],
+	//		"Resource": ["arn:aws:s3:::%s/*"]
+	//	}]
+	//}`, config.Env.S3.BucketSitemap))
+	//if err != nil && err.Error() != "200 OK" {
+	//	logger.Log.Panic().Err(err).Send()
+	//}
 
 	Client = cl
 }
